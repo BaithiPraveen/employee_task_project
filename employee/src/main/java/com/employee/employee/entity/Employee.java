@@ -1,6 +1,5 @@
 package com.employee.employee.entity;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,16 +8,14 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "employee_p")
-public class Employee {   	
+public class Employee {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
+    
     private int id;
 
-    @Column(name = "name")
     private String name;
 
-    @Column(name = "dept")
     private String dept;
 
     public int getId() {

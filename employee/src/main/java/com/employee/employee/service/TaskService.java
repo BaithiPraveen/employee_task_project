@@ -1,6 +1,7 @@
 package com.employee.employee.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 // import org.springframework.beans.factory.annotation.Autowired;
 
 import com.employee.employee.repository.TaskRepository;
-import com.employee.employee.entity.Employee;
+// import com.employee.employee.entity.Employee;
 import com.employee.employee.entity.Task;
 
 @Service
@@ -41,7 +42,7 @@ public class TaskService
         return String.format("%s : Task is deleted succfully..!",task_desc);
     }
 
-    public List<Task> getTaskList(int id)
+    public Optional<List<Task>> getTaskList(int id)
     {
         return taskRepository.findByAssignedToId(id);
     }

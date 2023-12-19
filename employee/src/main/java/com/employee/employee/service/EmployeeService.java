@@ -10,17 +10,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 // import java.util.Optional;
+import java.util.Optional;
 
 @Service
 public class EmployeeService {
 
     @Autowired
-    private final EmployeeRepository employeeRepository;
+    private EmployeeRepository employeeRepository;
 
     @Autowired
-    TaskService taskService;
+    private TaskService taskService;
 
-    // @Autowired
     public EmployeeService(EmployeeRepository employeeRepository) {
         this.employeeRepository = employeeRepository;
     }
@@ -29,24 +29,30 @@ public class EmployeeService {
         return employeeRepository.findAll();
     }
 
-    public Employee getEmployeeById(int id) {
-        return employeeRepository.findById(id).get();
+    public Optional<Employee> getEmployeeById(int id) {
+        return employeeRepository.findById(id);
     }
 
     public Employee saveEmployee(Employee employee) {
         return employeeRepository.save(employee);
     }
 
-    public String deleteEmployee(int id) 
-    {        
-        String emp_name = getEmployeeById(id).getName();        
-        List<Task> task_list= taskService.getTaskList(id);
-        for (Task task : task_list)
+    public String deleteEmployee(int id)
+    {
+        Optional<Employee>emp_obj= getEmployeeById(id);
+        if(emp_obj.isPresent())
         {
-            task.setAssignedTo(null);
+            String emp_name = emp_obj.get().getName();
+            List<Task> task_list= taskService.getTaskList(id).get();
+
+            for (Task task : task_list)
+                task.setAssignedTo(null);
+
+            employeeRepository.deleteById(id);
+            return String.format("%s : employee deleted succfully..!", emp_name);
         }
-        employeeRepository.deleteById(id);
-        return String.format("%s : employee deleted succfully..!", emp_name);
+        else
+            return null;
     }
 
     public List<Employee> saveEmployees(List<Employee> employee_list) {
@@ -55,11 +61,17 @@ public class EmployeeService {
     }
 
     public Employee updateEmployee(Employee employee, int id) {
-        Employee employee_det = employeeRepository.findById(id).get();
-        employee_det.setName(employee.getName());
-        employee_det.setDept(employee.getDept());
-        Employee emp =employeeRepository.save(employee_det);
-        return emp;
+        Optional<Employee> employee_det = employeeRepository.findById(id);
+        if (employee_det.isPresent())
+        {
+            Employee employee_data_obj = employee_det.get();
+            employee_data_obj.setName(employee.getName());
+            employee_data_obj.setDept(employee.getDept());
+            Employee emp =employeeRepository.save(employee_data_obj);
+            return emp;
+        }
+        else
+            return null;
     }
 }
 
