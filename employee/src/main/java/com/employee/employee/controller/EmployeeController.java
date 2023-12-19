@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.employee.employee.entity.Employee;
@@ -144,5 +145,23 @@ public class EmployeeController
         catch(Exception ex){
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/name/{name}")
+    public List<Employee> getNamesEmployees(@PathVariable("name") String name)
+    {
+        return employeeService.getNamesEmployees(name);
+    }
+
+    @GetMapping("/dept/{dept}")
+    public List<Employee> getDeptEmployees(@PathVariable("dept") String dept)
+    {
+        return employeeService.getDeptEmployees(dept);
+    }
+
+    @GetMapping("/")
+    public List<Employee> getDeptEmployees(@RequestParam("name") String name,@RequestParam("dept") String dept)
+    {
+        return employeeService.getByNameAndDept(name, dept);
     }
 }

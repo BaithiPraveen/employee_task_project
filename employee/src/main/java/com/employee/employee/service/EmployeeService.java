@@ -73,5 +73,20 @@ public class EmployeeService {
         else
             return null;
     }
+
+    public List<Employee> getNamesEmployees(String name)
+    {
+        return employeeRepository.findByName(name);
+    }
+
+    public List<Employee> getDeptEmployees(String dept)
+    {
+        return employeeRepository.findByDept(dept);
+    }
+
+    public List<Employee> getByNameAndDept(String name,String dept)
+    {
+        return employeeRepository.findByNameAndDept(name,dept);
+    }
 }
 
