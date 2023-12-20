@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.employee.employee.entity.Employee;
-import com.employee.employee.exceptions.CustomExceptions;
+// import com.employee.employee.exceptions.CustomExceptions;
 import com.employee.employee.service.EmployeeService;
 
 @RestController
@@ -32,23 +32,33 @@ public class EmployeeController
     }
 
     @GetMapping
-    public ResponseEntity<List<Employee>> getAllEmployees() {
-        List<Employee>employee_list = employeeService.getAllEmployees();
-        if (employee_list.size()>0)
-            return new ResponseEntity<>(employee_list,HttpStatus.OK);
-        else
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    public ResponseEntity<?> getAllEmployees() 
+    {
+        try
+        {
+            List<Employee>employee_list = employeeService.getAllEmployees();
+            if (employee_list.isEmpty())
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No records found ..!");
+            else
+                return new ResponseEntity<>(employee_list,HttpStatus.OK);
+        }
+        catch(Exception ex)
+        {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ex.getMessage());
+            // return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable int id) throws CustomExceptions
+    public ResponseEntity<?> getEmployeeById(@PathVariable int id) 
     {
         try
         {
             if (id<1){
                 // System.out.print("entrerd into exception");
                 // throw new CustomExceptions("Invalid input");
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.badRequest().body("Invalid input data..!");
+                //return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid input data..!");
             }
 
             else
@@ -60,7 +70,7 @@ public class EmployeeController
                 if (employee.isPresent())
                     return new ResponseEntity<>(employee.get(),HttpStatus.OK);
                 else
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("employee not found");
             }
         }
         catch(Exception ex){
@@ -70,12 +80,12 @@ public class EmployeeController
     }
 
     @PostMapping
-    public ResponseEntity<Employee> saveEmployee(@RequestBody Employee employee) throws CustomExceptions 
+    public ResponseEntity<?> saveEmployee(@RequestBody Employee employee)  
     {
         try
         {
             if (employee == null)
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.badRequest().body("Invalid input employee data..!");
             Employee employee_data = employeeService.saveEmployee(employee);
             if (employee_data != null)
                 return new ResponseEntity<>(employee_data,HttpStatus.CREATED);
@@ -89,7 +99,7 @@ public class EmployeeController
     }
 
     @PostMapping("/save_emp_list")
-    public ResponseEntity<List<Employee>> saveEmployees(@RequestBody List<Employee> employee_list) throws CustomExceptions 
+    public ResponseEntity<List<?>> saveEmployees(@RequestBody List<Employee> employee_list)
     {
         try
         {
@@ -106,7 +116,7 @@ public class EmployeeController
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployee(@RequestBody Employee employee,@PathVariable int id)
+    public ResponseEntity<?> updateEmployee(@RequestBody Employee employee,@PathVariable int id)
     {
         try {
             if (employee != null && id > 0)
@@ -115,10 +125,10 @@ public class EmployeeController
                 if (updatedEmployee != null)
                     return ResponseEntity.ok(updatedEmployee);
                 else
-                    return ResponseEntity.notFound().build();
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("employee not found ..!");
             }
             else
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid input data..!");
         }
         catch (Exception ex)
         {
@@ -132,14 +142,14 @@ public class EmployeeController
         try
         {
             if (id<1)
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("invalid input data..!");
             else
             {
                 String msg = employeeService.deleteEmployee(id);
                 if (msg != null)
                     return ResponseEntity.ok(msg);
                 else
-                    return ResponseEntity.notFound().build();
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("employee not found ...!");
             }
         }
         catch(Exception ex){
