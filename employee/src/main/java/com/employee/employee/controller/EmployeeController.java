@@ -32,13 +32,13 @@ public class EmployeeController
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllEmployees() 
+    public ResponseEntity<?> getAllEmployees()
     {
         try
         {
             List<Employee>employee_list = employeeService.getAllEmployees();
             if (employee_list.isEmpty())
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No records found ..!");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No records found ..!");
             else
                 return new ResponseEntity<>(employee_list,HttpStatus.OK);
         }
@@ -50,7 +50,7 @@ public class EmployeeController
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getEmployeeById(@PathVariable int id) 
+    public ResponseEntity<?> getEmployeeById(@PathVariable int id)
     {
         try
         {
@@ -80,12 +80,13 @@ public class EmployeeController
     }
 
     @PostMapping
-    public ResponseEntity<?> saveEmployee(@RequestBody Employee employee)  
+    public ResponseEntity<?> saveEmployee(@RequestBody Employee employee)
     {
         try
         {
-            if (employee == null)
-                return ResponseEntity.badRequest().body("Invalid input employee data..!");
+            // System.out.println("employee data : "+employee);
+            if (employee.getName() == null)
+                return ResponseEntity.badRequest().body("Invalid input employee data..! missing Name field");
             Employee employee_data = employeeService.saveEmployee(employee);
             if (employee_data != null)
                 return new ResponseEntity<>(employee_data,HttpStatus.CREATED);
@@ -94,24 +95,23 @@ public class EmployeeController
         }
         catch(Exception ex)
         {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 
     @PostMapping("/save_emp_list")
-    public ResponseEntity<List<?>> saveEmployees(@RequestBody List<Employee> employee_list)
+    public ResponseEntity<?> saveEmployees(@RequestBody List<Employee> employee_list)
     {
         try
         {
             if (employee_list.isEmpty())
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.badRequest().body("list is empty...!");
             List<Employee> employee_list_data = employeeService.saveEmployees(employee_list);
             return new ResponseEntity<>(employee_list_data,HttpStatus.CREATED);
-
         }
         catch(Exception ex)
         {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 
@@ -132,7 +132,7 @@ public class EmployeeController
         }
         catch (Exception ex)
         {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 
@@ -153,7 +153,7 @@ public class EmployeeController
             }
         }
         catch(Exception ex){
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 

@@ -32,44 +32,38 @@ public class TaskController
     }
 
     @GetMapping
-    public ResponseEntity<List<Task>> getAllTasks()
+    public ResponseEntity<?> getAllTasks()
     {
-        List<Task> list_task =  taskService.getAllTasks();
         try
         {
+            List<Task> list_task =  taskService.getAllTasks();
             if (list_task.isEmpty())
-            {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("no records found in tasks..!");
             else
-            {
                 return ResponseEntity.ok(list_task);
-            }
-            
         }
         catch(Exception ex)
         {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Task> getTaskById(@PathVariable int id)
+    public ResponseEntity<?> getTaskById(@PathVariable int id)
     {
         try
         {
             if (id<1)
-                return ResponseEntity.badRequest().build();
-            Task task_data = taskService.getTaskById(id);
-            if (task_data == null)
-                return ResponseEntity.notFound().build();
-            else
+                return ResponseEntity.badRequest().body("invalid input task id..!");
+            Optional<Task> task_data = taskService.getTaskById(id);
+            System.out.println("task data : "+task_data);
+            if (task_data.isPresent())
                 return ResponseEntity.ok(task_data);
-
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("task not found...!");
         }
         catch(Exception ex)
         {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 
@@ -78,74 +72,70 @@ public class TaskController
     {
         try
         {
-            if (task == null)
-                return ResponseEntity.badRequest().build();
+            if (task.getTaskDescription() == null)
+                return ResponseEntity.badRequest().body("invalid input data..!");
             Task task_data = taskService.saveTask(task);
             if (task_data == null)
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Asiisned_to id is not found in employee table..!");
             else
-                return new ResponseEntity<>(String.format("%s task is created succfully",task_data.getTaskDescription()),HttpStatus.CREATED);
+                return new ResponseEntity<>(String.format("%s task is created succefully",task_data.getTaskDescription()),HttpStatus.CREATED);
         }
         catch(Exception ex)
         {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTask(@PathVariable int id,@RequestBody Task task)
+    public ResponseEntity<?> updateTask(@PathVariable int id,@RequestBody Task task)
     {
         try
         {
-            if (id<1 || task == null)
-                return ResponseEntity.badRequest().build();
+            if (id<1 || task.getTaskDescription() == null)
+                return ResponseEntity.badRequest().body("invalid input data...!");
             Task task_data = taskService.updateTask(task,id);
+            if (task_data == null)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("invalid data..!");
             return ResponseEntity.ok(task_data);
         }
         catch(Exception ex)
         {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String>  deleteTask(@PathVariable int id) 
     {
-        try 
+        try
         {
             if (id<1)
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.badRequest().body("invalid input data..!");
             String delete_msg = taskService.deleteTask(id);
-            if (delete_msg.contains("Task is deleted succfully..!"))
+            if (delete_msg.contains("Task is deleted succefully..!"))
                 return ResponseEntity.ok(delete_msg);
-            else
-                return ResponseEntity.badRequest().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("task is not found..!");
         }
         catch(Exception ex)
         {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 
     @GetMapping("/list/{eid}")
-    public ResponseEntity<List<Task>> getTaskList(@PathVariable("eid") int eid)
+    public ResponseEntity<?> getTaskList(@PathVariable("eid") int eid)
     {
         try
         {
             if (eid<1)
-                return ResponseEntity.badRequest().build();
-            Optional<List<Task>> task_list = taskService.getTaskList(eid);
-            System.out.println("task list : "+task_list);
-            List<Task> task_data = task_list.get();
-            if (! task_data.isEmpty())
-            {
-                return ResponseEntity.ok(task_data);
-            }
-            else return ResponseEntity.notFound().build();
-
+                return ResponseEntity.badRequest().body("invalid input data..!");
+            List<Task> task_data =taskService.getTaskList(eid).get();
+            if (task_data.isEmpty())
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("no records found found..!");
+            return ResponseEntity.ok(task_data);
         }
         catch (Exception ex)
         {
-            return ResponseEntity.badRequest().build();
+            return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
 

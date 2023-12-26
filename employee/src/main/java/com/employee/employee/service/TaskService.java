@@ -28,16 +28,31 @@ public class TaskService
         return taskRepository.findAll();
     }
 
-    public Task getTaskById(int id) {
-        return taskRepository.findById(id).get();
+    public Optional<Task> getTaskById(int id) {
+        return taskRepository.findById(id);
     }
 
-    public Task saveTask(Task task) {
-        return taskRepository.save(task);
+    public Task saveTask(Task task)
+    {
+        try
+        {
+            // Employee employee_id = task.getAssignedTo();
+            // System.out.println(employee_id+ " "+employee_id.getId());
+            // Optional<Employee> emp_id_exist = employeeService.getEmployeeById(employee_id.getId());
+            // System.out.println("iam in try in service ..@");
+            // if (emp_id_exist.isPresent())
+                return taskRepository.save(task);
+            // else return null;
+        }
+        catch(Exception ex)
+        {
+            System.out.println("iam in service method..!");
+            return null;
+        }
     }
 
     public String deleteTask(int id) {
-        String task_desc = getTaskById(id).getTaskDescription();
+        String task_desc = getTaskById(id).get().getTaskDescription();
         taskRepository.deleteById(id);
         return String.format("%s : Task is deleted succfully..!",task_desc);
     }
