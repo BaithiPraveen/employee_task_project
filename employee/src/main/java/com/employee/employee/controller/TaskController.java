@@ -2,7 +2,9 @@ package com.employee.employee.controller;
 
 import java.util.List;
 // import java.util.Optional;
+import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 // import org.springframework.beans.factory.annotation.Autowired;
@@ -13,23 +15,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Optional;
 import com.employee.employee.entity.Task;
 import com.employee.employee.service.TaskService;
 
 @RestController
 @RequestMapping("/tasks")
-public class TaskController 
+public class TaskController
 {
-    private final TaskService taskService;
-
-    // @Autowired
-    public TaskController(TaskService taskService) {
-        this.taskService = taskService;
-    }
+    @Autowired
+    private TaskService taskService;
 
     @GetMapping
     public ResponseEntity<?> getAllTasks()
@@ -76,7 +73,7 @@ public class TaskController
                 return ResponseEntity.badRequest().body("invalid input data..!");
             Task task_data = taskService.saveTask(task);
             if (task_data == null)
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Asiisned_to id is not found in employee table..!");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("assignedTo_id is not found in employee table..!");
             else
                 return new ResponseEntity<>(String.format("%s task is created succefully",task_data.getTaskDescription()),HttpStatus.CREATED);
         }
@@ -111,9 +108,7 @@ public class TaskController
             if (id<1)
                 return ResponseEntity.badRequest().body("invalid input data..!");
             String delete_msg = taskService.deleteTask(id);
-            if (delete_msg.contains("Task is deleted succefully..!"))
                 return ResponseEntity.ok(delete_msg);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("task is not found..!");
         }
         catch(Exception ex)
         {

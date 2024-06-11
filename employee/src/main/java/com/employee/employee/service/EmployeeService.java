@@ -1,16 +1,16 @@
 package com.employee.employee.service;
-import com.employee.employee.entity.Employee;
-import com.employee.employee.entity.Task;
-import com.employee.employee.repository.EmployeeRepository;
-// import com.employee.employee.repository.TaskRepository;
+import java.util.List;
+// import java.util.Optional;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 // import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-// import java.util.Optional;
-import java.util.Optional;
+import com.employee.employee.entity.Employee;
+import com.employee.employee.entity.Task;
+import com.employee.employee.repository.EmployeeRepository;
+// import com.employee.employee.repository.TaskRepository;
 
 @Service
 public class EmployeeService {
@@ -21,16 +21,19 @@ public class EmployeeService {
     @Autowired
     private TaskService taskService;
 
-    public EmployeeService(EmployeeRepository employeeRepository) {
-        this.employeeRepository = employeeRepository;
-    }
-
     public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
     }
 
     public Optional<Employee> getEmployeeById(int id) {
-        return employeeRepository.findById(id);
+        try
+        {
+            return employeeRepository.findById(id);
+        }
+        catch(Exception ex)
+        {
+            return null;
+        }
     }
 
     public Employee saveEmployee(Employee employee) {

@@ -30,8 +30,8 @@ public class UserService {
 
     public User creatUser(User user)
     {
-        System.out.println("hii i am in me..!");
-        System.out.println("user details : " +user.getId()+user.getPassword()+user.getRoles()+user.getUsername());
+        // System.out.println("hii i am in me..!");
+        // System.out.println("user details : " +user.getId()+user.getPassword()+user.getRoles()+user.getUsername());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }

@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class HomeController {
     @GetMapping
-    public String Homepage()
+    public String homePage()
     {
-        return "Wel come to osi..!";
+        return "Well come to osi..!";
     }
 }

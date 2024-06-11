@@ -6,13 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-// import com.employee.employee.repository.EmployeeRepository;
-
-// import org.springframework.beans.factory.annotation.Autowired;
-
-import com.employee.employee.repository.TaskRepository;
-// import com.employee.employee.entity.Employee;
 import com.employee.employee.entity.Task;
+import com.employee.employee.repository.TaskRepository;
 
 @Service
 public class TaskService 
@@ -37,7 +32,7 @@ public class TaskService
         try
         {
             // Employee employee_id = task.getAssignedTo();
-            // System.out.println(employee_id+ " "+employee_id.getId());
+            System.out.println(task+ " "+task.getAssignedTo());
             // Optional<Employee> emp_id_exist = employeeService.getEmployeeById(employee_id.getId());
             // System.out.println("iam in try in service ..@");
             // if (emp_id_exist.isPresent())
@@ -46,7 +41,7 @@ public class TaskService
         }
         catch(Exception ex)
         {
-            System.out.println("iam in service method..!");
+            // System.out.println("iam in service method..!"+ex.getMessage());
             return null;
         }
     }
@@ -63,9 +58,14 @@ public class TaskService
     }
 
     public Task updateTask(Task task, int id) {
-        Task task_det = taskRepository.findById(id).get();
-        task_det.setTaskDescription(task.getTaskDescription());
-        task_det.setStatus(task.getStatus());
-        return taskRepository.save(task_det);
+        Optional<Task> op_task = taskRepository.findById(id);
+        if (op_task.isPresent())
+        {
+            Task task_det = op_task.get();
+            task_det.setTaskDescription(task.getTaskDescription());
+            task_det.setStatus(task.getStatus());
+            return taskRepository.save(task_det);
+        }
+        return null;
     }
 }
